@@ -56,19 +56,65 @@ Para esto, realice lo siguiente:
 	git commit -m "PARTE 1".
 	```
 
+**Respuestas:**
+
+1. Se añadió la instrucción para enviar el punto al tópico /topic/newpoint utilizando el cliente STOMP creado (stompClient).
+	
+	![img1.png](img/img1.png)
+   
+	De esta forma, cada punto ingresado es dibujado y enviado a todos los clientes suscritos al tópico
+
+2. Se modifico la función de conexión y suscripción para que el cliente se suscribiera al tópico /topic/newpoint y reaccionara cuando llegaran nuevos mensajes.
+	
+	Para esto se reemplazó la suscripción al tópico /topic/TOPICXX por /topic/newpoint y se mostraron las coordenadas recibidas con un alert() y se dibujó el punto recibido en el canvas.
+
+	![img1.1.png](img/img1.1.png)
+
+3. Se ejecutó el servidor Spring Boot y se abrió la aplicación en tres pestañas en modo incógnito
+
+4. Al ingresar el punto X = 200, Y = 200 en una pestaña y presionar Send point:
+
+- En todas las pestañas se mostró un alert con el punto recibido.
+- El punto se dibujó automáticamente en el canvas de cada una.
+
+	![img2.png](img/img2.png)
+	![img3.png](img/img3.png)
+	![img4.png](img/img4.png)
 
 ## Parte II.
 
 Para hacer mas útil la aplicación, en lugar de capturar las coordenadas con campos de formulario, las va a capturar a través de eventos sobre un elemento de tipo \<canvas>. De la misma manera, en lugar de simplemente mostrar las coordenadas enviadas en los eventos a través de 'alertas', va a dibujar dichos puntos en el mismo canvas. Haga uso del mecanismo de captura de eventos de mouse/táctil usado en ejercicios anteriores con este fin.
 
 1. Haga que el 'callback' asociado al tópico /topic/newpoint en lugar de mostrar una alerta, dibuje un punto en el canvas en las coordenadas enviadas con los eventos recibidos. Para esto puede [dibujar un círculo de radio 1](http://www.w3schools.com/html/html5_canvas.asp).
-4. Ejecute su aplicación en varios navegadores (y si puede en varios computadores, accediendo a la aplicación mendiante la IP donde corre el servidor). Compruebe que a medida que se dibuja un punto, el mismo es replicado en todas las instancias abiertas de la aplicación.
+2. Ejecute su aplicación en varios navegadores (y si puede en varios computadores, accediendo a la aplicación mendiante la IP donde corre el servidor). Compruebe que a medida que se dibuja un punto, el mismo es replicado en todas las instancias abiertas de la aplicación.
 
-5. Haga commit de lo realizado, para marcar el avance de la parte 2.
+3. Haga commit de lo realizado, para marcar el avance de la parte 2.
 
 	```bash
 	git commit -m "PARTE 2".
 	```
+**Respuestas:**
+
+1. Se modificó el callback asociado al tópico /topic/newpoint, antes, se mostraba una alerta con las coordenadas recibidas, ahora, se dibuja directamente un punto en el canvas usando la función addPointToCanvas().
+
+![img5.1.png](img/img5.1.png)
+
+2. Se agregó un listener de eventos de clic al canvas para capturar las coordenadas del mouse y publicarlas como puntos en el tópico /topic/newpoint.
+
+![img5.png](img/img5.png)
+
+Se muestra cómo, al hacer clic en el canvas en una pestaña del navegador, el punto se dibuja automáticamente en todos los demás navegadores abiertos, gracias a la propagación del mensaje STOMP.
+
+![img7.png](img/img7.png)
+![img8.png](img/img8.png)
+
+Si se verifica la consola del navegador, se observa:
+- La conexión exitosa al WebSocket (Connected: CONNECTED)
+- La suscripción al tópico /topic/newpoint
+- El envío del mensaje con las coordenadas (SEND)
+- La recepción del mensaje (MESSAGE)
+
+![img9.png](img/img9.png)
 
 ## Parte III.
 
