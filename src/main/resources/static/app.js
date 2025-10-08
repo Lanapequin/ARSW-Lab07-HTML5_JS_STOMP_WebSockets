@@ -38,22 +38,23 @@ var app = (function () {
             console.log('Connected: ' + frame);
             stompClient.subscribe('/topic/newpoint', function (eventbody) {
                 var theObject = JSON.parse(eventbody.body);
-                alert("Nuevo punto recibido: X=" + theObject.x + ", Y=" + theObject.y);
                 addPointToCanvas(theObject);
             });
         });
 
     };
-    
-    
 
     return {
 
         init: function () {
             var can = document.getElementById("canvas");
-            
             //websocket connection
             connectAndSubscribe();
+
+            can.addEventListener("click", function (evt) {
+                var pos = getMousePosition(evt);
+                app.publishPoint(pos.x, pos.y);
+            });
         },
 
         publishPoint: function(px,py){
