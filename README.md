@@ -129,6 +129,30 @@ Ajuste la aplicación anterior para que pueda manejar más de un dibujo a la vez
 	git commit -m "PARTE 3".
 	```
 
+**Respuestas:**
+
+Para permitir múltiples sesiones de dibujo colaborativo de forma simultánea, se ajustó la aplicación para que cada dibujo tenga su propio tópico STOMP. Esto permite que los puntos se compartan únicamente entre los clientes que estén suscritos al mismo identificador de dibujo.
+
+**Actividades realizadas:**
+
+1. Se agregó un campo en la interfaz HTML para que el usuario ingrese el **ID del dibujo**. Este número determina el tópico al que se conectará el cliente.
+
+2. Se modificó la función `init()` en el módulo JavaScript para que la conexión al WebSocket y la suscripción al tópico se realicen **solo al presionar el botón "Conectarse"**. El tópico se construye dinámicamente como `/topic/newpoint.{ID}`.
+
+3. Se ajustó la función `publishPoint()` para que los puntos se publiquen en el tópico correspondiente al ID ingresado por el usuario. Esto garantiza que los puntos solo se compartan entre los clientes que estén conectados al mismo dibujo.
+
+4. Se realizaron pruebas abriendo la aplicación en **varias pestañas** del navegador, cada una conectada a un ID de dibujo diferente. Se verificó que los puntos dibujados en un canvas **no se replican** en los clientes conectados a otro ID, confirmando que los tópicos son independientes.
+
+- Cada cliente se conecta manualmente al tópico correspondiente usando el botón "Conectarse".
+- Los puntos se publican y reciben únicamente entre clientes que comparten el mismo ID.
+- Se pueden tener múltiples sesiones de dibujo independientes funcionando en paralelo.
+
+Mismo ID:
+![img10.png](img/img10.png)
+
+Diferente ID:
+![img11.png](img/img11.png)
+
 
 ## Parte IV.
 

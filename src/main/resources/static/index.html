@@ -15,9 +15,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-<html>
+<html lang="en">
     <head>
-        <title>TODO supply a title</title>
+        <title>CollabPaint</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -26,9 +26,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <script src="/app.js"></script>
     </head>
 
+    <body>
+        <h2>Dibujo colaborativo</h2>
 
-    
-    <body onload="app.init()">
-        <canvas id="canvas" width="800" height="600"></canvas>
+        <label for="drawingId">ID del dibujo:</label>
+        <input type="number" id="drawingId" placeholder="Ej: 25">
+        <button id="connectBtn">Conectarse</button>
+
+        <br><br>
+        <canvas id="canvas" width="800" height="600" style="border:1px solid;"></canvas>
     </body>
 </html>
