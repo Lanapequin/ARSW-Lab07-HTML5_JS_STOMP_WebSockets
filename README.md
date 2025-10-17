@@ -56,19 +56,65 @@ Para esto, realice lo siguiente:
 	git commit -m "PARTE 1".
 	```
 
+**Respuestas:**
+
+1. Se añadió la instrucción para enviar el punto al tópico /topic/newpoint utilizando el cliente STOMP creado (stompClient).
+	
+	![img1.png](img/img1.png)
+   
+	De esta forma, cada punto ingresado es dibujado y enviado a todos los clientes suscritos al tópico
+
+2. Se modifico la función de conexión y suscripción para que el cliente se suscribiera al tópico /topic/newpoint y reaccionara cuando llegaran nuevos mensajes.
+	
+	Para esto se reemplazó la suscripción al tópico /topic/TOPICXX por /topic/newpoint y se mostraron las coordenadas recibidas con un alert() y se dibujó el punto recibido en el canvas.
+
+	![img1.1.png](img/img1.1.png)
+
+3. Se ejecutó el servidor Spring Boot y se abrió la aplicación en tres pestañas en modo incógnito
+
+4. Al ingresar el punto X = 200, Y = 200 en una pestaña y presionar Send point:
+
+- En todas las pestañas se mostró un alert con el punto recibido.
+- El punto se dibujó automáticamente en el canvas de cada una.
+
+	![img2.png](img/img2.png)
+	![img3.png](img/img3.png)
+	![img4.png](img/img4.png)
 
 ## Parte II.
 
 Para hacer mas útil la aplicación, en lugar de capturar las coordenadas con campos de formulario, las va a capturar a través de eventos sobre un elemento de tipo \<canvas>. De la misma manera, en lugar de simplemente mostrar las coordenadas enviadas en los eventos a través de 'alertas', va a dibujar dichos puntos en el mismo canvas. Haga uso del mecanismo de captura de eventos de mouse/táctil usado en ejercicios anteriores con este fin.
 
 1. Haga que el 'callback' asociado al tópico /topic/newpoint en lugar de mostrar una alerta, dibuje un punto en el canvas en las coordenadas enviadas con los eventos recibidos. Para esto puede [dibujar un círculo de radio 1](http://www.w3schools.com/html/html5_canvas.asp).
-4. Ejecute su aplicación en varios navegadores (y si puede en varios computadores, accediendo a la aplicación mendiante la IP donde corre el servidor). Compruebe que a medida que se dibuja un punto, el mismo es replicado en todas las instancias abiertas de la aplicación.
+2. Ejecute su aplicación en varios navegadores (y si puede en varios computadores, accediendo a la aplicación mendiante la IP donde corre el servidor). Compruebe que a medida que se dibuja un punto, el mismo es replicado en todas las instancias abiertas de la aplicación.
 
-5. Haga commit de lo realizado, para marcar el avance de la parte 2.
+3. Haga commit de lo realizado, para marcar el avance de la parte 2.
 
 	```bash
 	git commit -m "PARTE 2".
 	```
+**Respuestas:**
+
+1. Se modificó el callback asociado al tópico /topic/newpoint, antes, se mostraba una alerta con las coordenadas recibidas, ahora, se dibuja directamente un punto en el canvas usando la función addPointToCanvas().
+
+![img5.1.png](img/img5.1.png)
+
+2. Se agregó un listener de eventos de clic al canvas para capturar las coordenadas del mouse y publicarlas como puntos en el tópico /topic/newpoint.
+
+![img5.png](img/img5.png)
+
+Se muestra cómo, al hacer clic en el canvas en una pestaña del navegador, el punto se dibuja automáticamente en todos los demás navegadores abiertos, gracias a la propagación del mensaje STOMP.
+
+![img7.png](img/img7.png)
+![img8.png](img/img8.png)
+
+Si se verifica la consola del navegador, se observa:
+- La conexión exitosa al WebSocket (Connected: CONNECTED)
+- La suscripción al tópico /topic/newpoint
+- El envío del mensaje con las coordenadas (SEND)
+- La recepción del mensaje (MESSAGE)
+
+![img9.png](img/img9.png)
 
 ## Parte III.
 
@@ -82,6 +128,32 @@ Ajuste la aplicación anterior para que pueda manejar más de un dibujo a la vez
 	```bash
 	git commit -m "PARTE 3".
 	```
+
+**Respuestas:**
+
+Para permitir múltiples sesiones de dibujo colaborativo de forma simultánea, se ajustó la aplicación para que cada dibujo tenga su propio tópico STOMP. Esto permite que los puntos se compartan únicamente entre los clientes que estén suscritos al mismo identificador de dibujo.
+
+**Actividades realizadas:**
+
+1. Se agregó un campo en la interfaz HTML para que el usuario ingrese el **ID del dibujo**. Este número determina el tópico al que se conectará el cliente.
+
+2. Se modificó la función `init()` en el módulo JavaScript para que la conexión al WebSocket y la suscripción al tópico se realicen **solo al presionar el botón "Conectarse"**. El tópico se construye dinámicamente como `/topic/newpoint.{ID}`.
+
+3. Se ajustó la función `publishPoint()` para que los puntos se publiquen en el tópico correspondiente al ID ingresado por el usuario. Esto garantiza que los puntos solo se compartan entre los clientes que estén conectados al mismo dibujo.
+
+4. Se realizaron pruebas abriendo la aplicación en **varias pestañas** del navegador, cada una conectada a un ID de dibujo diferente. Se verificó que los puntos dibujados en un canvas **no se replican** en los clientes conectados a otro ID, confirmando que los tópicos son independientes.
+
+- Cada cliente se conecta manualmente al tópico correspondiente usando el botón "Conectarse".
+- Los puntos se publican y reciben únicamente entre clientes que comparten el mismo ID.
+- Se pueden tener múltiples sesiones de dibujo independientes funcionando en paralelo.
+
+*Dos clientes colaborando en el mismo dibujo:**
+
+![img10.png](img/img10.png)
+
+**Clientes conectados a diferentes IDs no comparten puntos:**
+
+![img11.png](img/img11.png)
 
 
 ## Parte IV.
@@ -133,7 +205,39 @@ Para ver cómo manejar esto desde el manejador de eventos STOMP del servidor, re
 	git commit -m "PARTE FINAL".
 	```	
 
+Aquí tienes las respuestas para el README de la **Parte IV**, siguiendo la misma estructura que las partes anteriores, junto con los nombres sugeridos para las imágenes que debes capturar:
 
+---
+
+## Parte IV.
+
+**Respuestas:**
+
+1. Se creó la clase `STOMPMessagesHandler` en el backend, que intercepta los mensajes enviados a `/app/newpoint.{numdibujo}`. Esta clase utiliza `SimpMessagingTemplate` para reenviar los puntos al tópico `/topic/newpoint.{numdibujo}`. Además, se imprime en consola cada punto recibido.
+
+    ![img12.png](img/img12.png)
+
+2. Se modificó el cliente para que los puntos se publiquen en `/app/newpoint.{numdibujo}` en lugar de `/topic/...`. Esto permite que el servidor reciba y procese los puntos antes de reenviarlos.
+
+    ![img13.png](img/img13.png)
+
+3. Se extendió la funcionalidad del controlador para almacenar los puntos recibidos por dibujo. Cuando se acumulan cuatro puntos, se genera un polígono y se publica en el nuevo tópico `/topic/newpolygon.{numdibujo}`.
+
+   ![img14.png](img/img14.png)
+
+4. El cliente se suscribió al tópico `/topic/newpolygon.{numdibujo}`. Se implementó la función `drawPolygon(points)` que dibuja un polígono cerrado y relleno en el canvas usando los puntos recibidos.
+
+    ![img15.png](img/img15.png)
+
+5. Se verificó la funcionalidad en múltiples pestañas y dibujos simultáneos. Al insertar cuatro puntos en un mismo dibujo, el polígono se genera y se propaga correctamente a todos los clientes conectados al mismo ID. Los dibujos con IDs diferentes no se ven afectados.
+
+    ![img16.png](img/img16.png)
+
+   ![img17.png](img/img17.png)
+
+6. Se elaboró un nuevo diagrama de actividades que refleja la lógica extendida de la aplicación, incluyendo el manejo de tópicos dinámicos y la generación de polígonos.
+
+   ![diagram.png](img/diagram.png)
 
 ### Criterios de evaluación
 
