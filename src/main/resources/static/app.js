@@ -56,10 +56,16 @@ let app = (function () {
 
         stompClient.connect({}, function (frame) {
             console.log('Connected: ' + frame);
+
             stompClient.subscribe(`/topic/newpoint.${drawingId}`, function (eventbody) {
-                let theObject = JSON.parse(eventbody.body);
-                addPointToCanvas(theObject);
-            });stompClient.send(`/topic/newpoint.${drawingId}`, {}, JSON.stringify(pt));
+                let pt = JSON.parse(eventbody.body);
+                addPointToCanvas(pt);
+            });
+
+            stompClient.subscribe(`/topic/newpolygon.${drawingId}`, function (eventbody) {
+                let polygon = JSON.parse(eventbody.body);
+                drawPolygon(polygon.points);
+            });
         });
     };
 
@@ -86,7 +92,7 @@ let app = (function () {
             console.info("publishing point at "+pt);
             addPointToCanvas(pt);
 
-            stompClient.send(`/topic/newpoint.${drawingId}`, {}, JSON.stringify(pt));
+            stompClient.send(`/app/newpoint.${drawingId}`, {}, JSON.stringify(pt));
         },
 
         disconnect: function () {
@@ -97,6 +103,20 @@ let app = (function () {
         }
     };
 })();
+
+function drawPolygon(points) {
+    let canvas = document.getElementById("canvas");
+    let ctx = canvas.getContext("2d");
+    ctx.beginPath();
+    ctx.moveTo(points[0].x, points[0].y);
+    for (let i = 1; i < points.length; i++) {
+        ctx.lineTo(points[i].x, points[i].y);
+    }
+    ctx.closePath();
+    ctx.fillStyle = "#FF000088";
+    ctx.fill();
+    ctx.stroke();
+}
 
 document.addEventListener("DOMContentLoaded", function () {
     app.init();

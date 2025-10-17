@@ -147,10 +147,12 @@ Para permitir múltiples sesiones de dibujo colaborativo de forma simultánea, s
 - Los puntos se publican y reciben únicamente entre clientes que comparten el mismo ID.
 - Se pueden tener múltiples sesiones de dibujo independientes funcionando en paralelo.
 
-Mismo ID:
+*Dos clientes colaborando en el mismo dibujo:**
+
 ![img10.png](img/img10.png)
 
-Diferente ID:
+**Clientes conectados a diferentes IDs no comparten puntos:**
+
 ![img11.png](img/img11.png)
 
 
@@ -203,7 +205,39 @@ Para ver cómo manejar esto desde el manejador de eventos STOMP del servidor, re
 	git commit -m "PARTE FINAL".
 	```	
 
+Aquí tienes las respuestas para el README de la **Parte IV**, siguiendo la misma estructura que las partes anteriores, junto con los nombres sugeridos para las imágenes que debes capturar:
 
+---
+
+## Parte IV.
+
+**Respuestas:**
+
+1. Se creó la clase `STOMPMessagesHandler` en el backend, que intercepta los mensajes enviados a `/app/newpoint.{numdibujo}`. Esta clase utiliza `SimpMessagingTemplate` para reenviar los puntos al tópico `/topic/newpoint.{numdibujo}`. Además, se imprime en consola cada punto recibido.
+
+    ![img12.png](img/img12.png)
+
+2. Se modificó el cliente para que los puntos se publiquen en `/app/newpoint.{numdibujo}` en lugar de `/topic/...`. Esto permite que el servidor reciba y procese los puntos antes de reenviarlos.
+
+    ![img13.png](img/img13.png)
+
+3. Se extendió la funcionalidad del controlador para almacenar los puntos recibidos por dibujo. Cuando se acumulan cuatro puntos, se genera un polígono y se publica en el nuevo tópico `/topic/newpolygon.{numdibujo}`.
+
+   ![img14.png](img/img14.png)
+
+4. El cliente se suscribió al tópico `/topic/newpolygon.{numdibujo}`. Se implementó la función `drawPolygon(points)` que dibuja un polígono cerrado y relleno en el canvas usando los puntos recibidos.
+
+    ![img15.png](img/img15.png)
+
+5. Se verificó la funcionalidad en múltiples pestañas y dibujos simultáneos. Al insertar cuatro puntos en un mismo dibujo, el polígono se genera y se propaga correctamente a todos los clientes conectados al mismo ID. Los dibujos con IDs diferentes no se ven afectados.
+
+    ![img16.png](img/img16.png)
+
+   ![img17.png](img/img17.png)
+
+6. Se elaboró un nuevo diagrama de actividades que refleja la lógica extendida de la aplicación, incluyendo el manejo de tópicos dinámicos y la generación de polígonos.
+
+   ![diagram.png](img/diagram.png)
 
 ### Criterios de evaluación
 
