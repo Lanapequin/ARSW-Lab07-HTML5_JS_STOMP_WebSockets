@@ -2,25 +2,15 @@
 ### Arquitecturas de Software - ARSW
 ### Laboratorio - Broker de Mensajes STOMP con WebSockets + HTML5 Canvas.
 
-
-
-- Conectarse con un botón
-- publicar con eventos de mouse
-
-var newpoint = JSON.parse(greeting.body);
-                addPointToCanvas(newpoint);
-
-
-stompClient.send("/topic/newpoint", {}, JSON.stringify(pt));  				
-
-
 Este ejercicio se basa en la documentación oficial de SprinbBoot, para el [manejo de WebSockets con STOMP](https://spring.io/guides/gs/messaging-stomp-websocket/).
 
-En este repositorio se encuentra una aplicación SpringBoot que está configurado como Broker de mensajes, de forma similar a lo mostrado en la siguiente figura:
-
-![](https://docs.spring.io/spring/docs/current/spring-framework-reference/images/message-flow-simple-broker.png)
+En este repositorio se encuentra una aplicación SpringBoot que está configurado como Broker de mensajes.
 
 En este caso, el manejador de mensajes asociado a "/app" aún no está configurado, pero sí lo está el broker '/topic'. Como mensaje, se usarán puntos, pues se espera que esta aplicación permita progragar eventos de dibujo de puntos generados por los diferentes clientes.
+
+### Integrantes
+- Laura Natalia Perilla Quintero - [Lanapequin](https://github.com/Lanapequin)
+- Santiago Botero Garcia - [LePeanutButter](https://github.com/LePeanutButter)
 
 ## Parte I.
 
